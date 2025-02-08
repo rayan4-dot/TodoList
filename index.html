@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Task Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
+
+        <div class="mb-4">
+            <label for="addTask" class="block text-lg font-medium text-gray-700 mb-2">Add Task</label>
+            <input type="text" id="addTask" placeholder="Write task here" required class="w-full p-2 border border-gray-300 rounded mb-4">
+            <button onclick="AddTask()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Add Task</button>
+        </div>
+
+        <table id="display" class="min-w-full bg-white border-collapse">
+            <thead>
+                <tr class="border-b bg-gray-50">
+                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700">Task</th>
+                    <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let tasks = [];
+        function AddTask() {
+    const task = document.getElementById('addTask').value.trim();
+    
+    if (task !== '') {
+
+        Swal.fire({
+            title: "Task Added!",
+            text: "Your task has been added successfully.",
+            icon: "success"
+        });
+        
+        tasks.push(task); 
+        document.getElementById('addTask').value = '';  
+        displayTask();  
+    }
+}
+
+
+        function displayTask() {
+            const display = document.getElementById('display').getElementsByTagName('tbody')[0];
+            display.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const row = display.insertRow();
+                const taskCell = row.insertCell(0);
+                const actionsCell = row.insertCell(1);
+                
+                taskCell.classList.add('py-2', 'px-4', 'text-sm', 'text-gray-700');
+                actionsCell.classList.add('py-2', 'px-4', 'text-sm');
+
+                taskCell.textContent = task;
+                actionsCell.innerHTML = `
+                    <button onclick="updateTask(${index})" class="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 mr-2">Update</button>
+                    <button onclick="deleteTask(${index})" class="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600">Delete</button>
+                `;
+            });
+        }
+
+        function deleteTask(index) {
+            Swal.fire({
+  title: "Are you sure?",
+  text: "You won't be able to revert this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, delete it!"
+}).then((result) => {
+  if (result.isConfirmed) {
+    Swal.fire({
+      title: "Deleted!",
+      text: "Your file has been deleted.",
+      icon: "success"
+    });
+    tasks.splice(index, 1);
+    displayTask();
+  }
+});
+        }
+
+        function updateTask(index) {
+            const updatedTask = prompt('Update task', tasks[index]);
+            if (updatedTask && updatedTask.trim() !== '') {
+                tasks[index] = updatedTask;
+                displayTask();
+            }
+        }
+    </script>
+</body>
+</html>
