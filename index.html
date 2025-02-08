@@ -33,22 +33,21 @@
     <script>
         let tasks = [];
         function AddTask() {
-    const task = document.getElementById('addTask').value.trim();
-    
-    if (task !== '') {
+            const task = document.getElementById('addTask').value.trim();
 
-        Swal.fire({
-            title: "Task Added!",
-            text: "Your task has been added successfully.",
-            icon: "success"
-        });
-        
-        tasks.push(task); 
-        document.getElementById('addTask').value = '';  
-        displayTask();  
-    }
-}
+            if (task !== '') {
+                Swal.fire({
+                    title: "Task Added!",
+                    text: "Your task has been added successfully.",
+                    icon: "success"
+                });
 
+                tasks.push(task);
+                document.getElementById('addTask').value = '';
+                displayTask();
+                saveTasksToLocalStorage();
+            }
+        }
 
         function displayTask() {
             const display = document.getElementById('display').getElementsByTagName('tbody')[0];
@@ -57,7 +56,7 @@
                 const row = display.insertRow();
                 const taskCell = row.insertCell(0);
                 const actionsCell = row.insertCell(1);
-                
+
                 taskCell.classList.add('py-2', 'px-4', 'text-sm', 'text-gray-700');
                 actionsCell.classList.add('py-2', 'px-4', 'text-sm');
 
@@ -71,24 +70,25 @@
 
         function deleteTask(index) {
             Swal.fire({
-  title: "Are you sure?",
-  text: "You won't be able to revert this!",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "Yes, delete it!"
-}).then((result) => {
-  if (result.isConfirmed) {
-    Swal.fire({
-      title: "Deleted!",
-      text: "Your file has been deleted.",
-      icon: "success"
-    });
-    tasks.splice(index, 1);
-    displayTask();
-  }
-});
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
+                    });
+                    tasks.splice(index, 1);
+                    displayTask();
+                    saveTasksToLocalStorage();
+                }
+            });
         }
 
         function updateTask(index) {
@@ -96,8 +96,23 @@
             if (updatedTask && updatedTask.trim() !== '') {
                 tasks[index] = updatedTask;
                 displayTask();
+                saveTasksToLocalStorage();
             }
         }
+
+        function saveTasksToLocalStorage() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function loadTasksFromLocalStorage() {
+            const storedTasks = localStorage.getItem('tasks');
+            if (storedTasks) {
+                tasks = JSON.parse(storedTasks);
+                displayTask();
+            }
+        }
+
+        window.onload = loadTasksFromLocalStorage;
     </script>
 </body>
 </html>
